@@ -8,8 +8,45 @@ Python wrapper for Pleiades gazetteer APIs
 from pleiades_python.gazetteer import Gazetteer
 g = Gazetteer()
 Using default user-agent (PleiadesPythonBot/0.0.1) for all requests to the Pleiades gazetteer website. We strongly prefer you define your own unique user-agent string and pass it to the Gazetteer class at instantiation.
-
 ```
+
+## Set your own user agent string (please!)
+
+```python
+g = Gazetteer(user_agent="MyPleiadesBot/1.0")
+```
+
+## Caching
+
+pleiades_python caches web responses (using requests-cache, via webiquette). 
+
+By default, platformdirs is used to determine where requests-cache puts the cache file (in the "user cache dir" appropriate for your OS). You can override this too. Here's a mac example:
+
+```python
+from pleiades_python.gazetteer import DEFAULT_CACHE_DIR
+print(DEFAULT_CACHE_DIR)
+/Users/paregorios/Library/Caches/pleiades-python/webi_cache/
+g = Gazetteer(cache_dir="/Users/paregorios/my/custom/cache/directory/")
+```
+
+The defaults for this package are designed to cache Pleiades content for a day. This insulates the Pleiades servers from multiple rapid-fire requests if you're testing, developing, or running things frequently in your application, but also ensures you'll get up-to-date information if something has changed in the last day. At initialization of a `Gazetteer` object, you can override these defaults for some of the parameters that [requests-cache uses to control expiration](https://requests-cache.readthedocs.io/en/stable/user_guide/expiration.html): 
+
+- cache_control
+- expire_after
+
+```python
+from pleiades_python.gazetteer import DEFAULT_CACHE_CONTROL, DEFAULT_EXPIRE_AFTER
+print(DEFAULT_CACHE_CONTROL)
+False
+print(DEFAULT_EXPIRE_AFTER)
+7 days, 0:00:00
+type(DEFAULT_EXPIRE_AFTER)
+<class 'datetime.timedelta'>
+from datetime import timedelta
+g = Gazetteer(expire_after=timedelta(days=1), user_agent="MyPleiadesBot/1.0")
+```
+
+
 
 ## Validate a Pleiades Place Identifier (PID)
 

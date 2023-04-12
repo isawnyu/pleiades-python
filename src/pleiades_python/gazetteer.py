@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 package_metadata = metadata("pleiades_python")
 
-DEFAULT_CACHE_CONTROL = True
+DEFAULT_CACHE_CONTROL = False
 DEFAULT_CACHE_DIR = user_cache_dir(package_metadata["Name"]) + "/webi_cache/"
 DEFAULT_EXPIRE_AFTER = timedelta(days=7)
 DEFAULT_RESPECT_ROBOTS_TXT = True
