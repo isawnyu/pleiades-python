@@ -21,7 +21,6 @@ package_metadata = metadata("pleiades_python")
 
 DEFAULT_CACHE_CONTROL = True
 DEFAULT_CACHE_DIR = user_cache_dir(package_metadata["Name"]) + "/webi_cache/"
-print(DEFAULT_CACHE_DIR)
 DEFAULT_EXPIRE_AFTER = timedelta(days=7)
 DEFAULT_RESPECT_ROBOTS_TXT = True
 DEFAULT_USER_AGENT = f"PleiadesPython/{package_metadata['Version']}"
