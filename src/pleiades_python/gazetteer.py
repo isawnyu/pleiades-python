@@ -13,6 +13,8 @@ from datetime import timedelta
 from importlib.metadata import metadata
 import logging
 from platformdirs import user_cache_dir
+from urllib.parse import urlparse
+from validators import url as uri
 from webiquette.webi import Webi
 
 logger = logging.getLogger(__name__)
@@ -23,7 +25,7 @@ DEFAULT_CACHE_CONTROL = True
 DEFAULT_CACHE_DIR = user_cache_dir(package_metadata["Name"]) + "/webi_cache/"
 DEFAULT_EXPIRE_AFTER = timedelta(days=7)
 DEFAULT_RESPECT_ROBOTS_TXT = True
-DEFAULT_USER_AGENT = f"PleiadesPython/{package_metadata['Version']}"
+DEFAULT_USER_AGENT = f"PleiadesPythonBot/{package_metadata['Version']}"
 
 
 class Gazetteer:
@@ -52,6 +54,43 @@ class Gazetteer:
             expire_after=expire_after,
             cache_dir=cache_dir,
         )
+
+    def valid_pid(self, pid: str, bypass_cache: bool = False) -> str:
+        """
+        Determine if place ID is valid
+        - Checks for format (either integer or full Pleiades place URI
+            - If bad, raises ValueError
+        - Issues an HTTP HEAD request
+            - If 200, returns URI
+            - If redirect, follows and returns final URI
+            - If error, raises error from Requests package
+        """
+        if not uri(pid):
+            try:
+                int(pid)
+            except:
+                raise
+            else:
+                place_uri = f"https://pleiades.stoa.org/places/{pid}"
+        else:
+            parts = urlparse(pid)
+            path_parts = parts.path.split("/")
+            if (
+                parts.netloc == "pleiades.stoa.org"
+                and len(path_parts) == 3
+                and path_parts[0] == ""
+                and path_parts[1] == "places"
+            ):
+                try:
+                    int(path_parts[2])
+                except:
+                    raise
+                else:
+                    place_uri = pid
+            else:
+                raise ValueError(pid)
+        r = self.webi.head(place_uri, allow_redirects=True)
+        return r.url
 
     def _validate_headers(self, headers: dict) -> dict:
         """Validate any custom headers added by the user"""

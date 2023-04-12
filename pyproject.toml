@@ -27,6 +27,7 @@ dependencies = [
   "airtight",
   "platformdirs",
   "pytest",
+  "validators",
   "webiquette @ https://github.com/isawnyu/webiquette/archive/refs/heads/main.zip"
 ]
 [project.urls]
