@@ -9,17 +9,30 @@
 Defines Gazetteer class, which wraps all interaction with the web application
 """
 
+from datetime import timedelta
 from importlib.metadata import version
 import logging
 from webiquette.webi import Webi
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_CACHE_CONTROL = True
+DEFAULT_CACHE_DIR = "data/cache/"
+DEFAULT_EXPIRE_AFTER = timedelta(days=7)
+DEFAULT_RESPECT_ROBOTS_TXT = True
 DEFAULT_USER_AGENT = f"PleiadesPython/{version('pleiades_python')}"
 
 
 class Gazetteer:
-    def __init__(self, user_agent: str = DEFAULT_USER_AGENT, headers: dict = {}):
+    def __init__(
+        self,
+        user_agent: str = DEFAULT_USER_AGENT,
+        headers: dict = {},
+        respect_robots_txt: bool = DEFAULT_RESPECT_ROBOTS_TXT,
+        cache_control: bool = DEFAULT_CACHE_CONTROL,
+        expire_after: timedelta = DEFAULT_EXPIRE_AFTER,
+        cache_dir: str = DEFAULT_CACHE_DIR,
+    ):
         self.headers = self._validate_headers(headers)
         ua = user_agent
         if not ua or ua == DEFAULT_USER_AGENT:
@@ -28,6 +41,14 @@ class Gazetteer:
             except KeyError:
                 pass
         self.headers["User-Agent"] = self._validate_user_agent(ua)
+        self.webi = Webi(
+            "pleiades.stoa.org",
+            headers=self.headers,
+            respect_robots_txt=respect_robots_txt,
+            cache_control=cache_control,
+            expire_after=expire_after,
+            cache_dir=cache_dir,
+        )
 
     def _validate_headers(self, headers: dict) -> dict:
         """Validate any custom headers added by the user"""

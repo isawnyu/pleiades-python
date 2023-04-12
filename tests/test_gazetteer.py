@@ -13,26 +13,27 @@ from pleiades_python.gazetteer import Gazetteer, DEFAULT_USER_AGENT
 from pathlib import Path
 from pytest import raises
 from shutil import rmtree
+from webiquette.webi import Webi
+
 
 import logging
 
 logger = logging.getLogger(__name__)
 
 CACHE_DIR = "tests/data/cache/"
-TEMP_DIR = "tests/data/temp/"
 
 
 class TestGazetteer:
     @classmethod
     def setup_class(cls):
-        pass
+        Path(CACHE_DIR).mkdir(parents=True, exist_ok=True)
 
     @classmethod
     def teardown_class(cls):
-        pass
+        rmtree(Path(CACHE_DIR), ignore_errors=True)
 
     def test_init_defaults(self):
-        g = Gazetteer()
+        g = Gazetteer(cache_dir=CACHE_DIR)
         h = g.headers
         assert isinstance(h, dict)
         assert len(h) == 1
@@ -40,25 +41,33 @@ class TestGazetteer:
 
     def test_init_user_agent(self):
         s = "SuperPleiadesFunBot/8675309"
-        g = Gazetteer(user_agent=s)
+        g = Gazetteer(user_agent=s, cache_dir=CACHE_DIR)
         assert g.headers["User-Agent"] == s
 
     def test_init_user_agent_in_header(self):
         s = "SuperPleiadesFunBot/8675309"
-        g = Gazetteer(headers={"User-Agent": s})
+        g = Gazetteer(headers={"User-Agent": s}, cache_dir=CACHE_DIR)
         assert g.headers["User-Agent"] == s
 
     def test_init_user_agent_override(self):
         s = "SuperPleiadesFunBot/8675309"
-        g = Gazetteer(user_agent=s, headers={"User-Agent": "PleiadesFishBot/42"})
+        g = Gazetteer(
+            user_agent=s,
+            headers={"User-Agent": "PleiadesFishBot/42"},
+            cache_dir=CACHE_DIR,
+        )
         assert g.headers["User-Agent"] == s
 
     def test_init_custom_header(self):
         m = "marvin@end.universe.restaurant"
-        g = Gazetteer(headers={"From": m})
+        g = Gazetteer(headers={"From": m}, cache_dir=CACHE_DIR)
         assert g.headers["From"] == m
 
     def test_init_suppress_unsupported_header(self):
-        g = Gazetteer(headers={"Vorpal": "bunny"})
+        g = Gazetteer(headers={"Vorpal": "bunny"}, cache_dir=CACHE_DIR)
         with raises(KeyError):
             g.headers["Vorpal"]
+
+    def test_init_webi(self):
+        g = Gazetteer(cache_dir=CACHE_DIR)
+        assert isinstance(g.webi, Webi)
