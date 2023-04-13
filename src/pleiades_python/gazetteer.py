@@ -14,6 +14,7 @@ from importlib.metadata import metadata
 import logging
 from platformdirs import user_cache_dir
 from pleiades_python.place import Place
+from pleiades_python.index import Index
 from urllib.parse import urlparse
 from validators import url as uri
 from webiquette.webi import Webi
@@ -56,6 +57,7 @@ class Gazetteer:
             cache_dir=cache_dir,
         )
         self.places = dict()
+        self._indexes = {"titles": Index("title")}
 
     def get_place(
         self, pid: str, reload: bool = False, bypass_cache: bool = False
@@ -72,8 +74,18 @@ class Gazetteer:
             self.reindex(p)
         return p
 
+    def lookup(self, index_name: str, terms: list | str, operator: bool = "or") -> set:
+        if isinstance(terms, str):
+            return self._indexes[index_name].lookup_term(terms)
+        else:
+            return self._indexes[index_name].lookup_terms(terms, operator=operator)
+
     def reindex(self, place: Place):
-        pass
+        for idx in self._indexes.values():
+            idx.update(place)
+
+    def search(self, **kwargs):
+        raise NotImplementedError
 
     def valid_pid(self, pid: str, bypass_cache: bool = False) -> str:
         """
