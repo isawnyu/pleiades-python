@@ -10,6 +10,7 @@ Test pleiades_python.gazetteer module
 """
 
 from pleiades_python.gazetteer import Gazetteer, DEFAULT_USER_AGENT
+from pleiades_search_api.search import Query
 from pathlib import Path
 from pytest import raises
 from requests.exceptions import HTTPError
@@ -137,3 +138,20 @@ class TestGazetteerGetPlace:
         pid = "295374"
         p = self.g.get_place(pid)
         assert p.title == "Zucchabar"
+
+
+class TestGazetteerSearch:
+    @classmethod
+    def setup_class(cls):
+        global gtest
+        cls.g = gtest
+
+    @classmethod
+    def teardown_class(cls):
+        pass
+
+    def test_search(self):
+        q = Query()
+        q.set_parameter("title", "Zucchabar")
+        results = self.g.search(q)
+        assert len(results["hits"]) == 1

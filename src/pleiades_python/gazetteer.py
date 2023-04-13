@@ -15,6 +15,7 @@ import logging
 from platformdirs import user_cache_dir
 from pleiades_python.place import Place
 from pleiades_python.index import Index
+from pleiades_search_api.search import Query, SearchInterface
 from urllib.parse import urlparse
 from validators import url as uri
 from webiquette.webi import Webi
@@ -27,7 +28,7 @@ DEFAULT_CACHE_CONTROL = False
 DEFAULT_CACHE_DIR = user_cache_dir(package_metadata["Name"]) + "/webi_cache/"
 DEFAULT_EXPIRE_AFTER = timedelta(days=1)
 DEFAULT_RESPECT_ROBOTS_TXT = True
-DEFAULT_USER_AGENT = f"PleiadesPythonBot/{package_metadata['Version']}"
+DEFAULT_USER_AGENT = f"PleiadesPython/{package_metadata['Version']}"
 
 
 class Gazetteer:
@@ -84,8 +85,13 @@ class Gazetteer:
         for idx in self._indexes.values():
             idx.update(place)
 
-    def search(self, **kwargs):
-        raise NotImplementedError
+    def search(self, query: Query):
+        try:
+            si = self.search_interface
+        except AttributeError:
+            self.search_interface = SearchInterface(webi=self.webi)
+            si = self.search_interface
+        return si.search(query)
 
     def valid_pid(self, pid: str, bypass_cache: bool = False) -> str:
         """

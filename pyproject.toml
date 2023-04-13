@@ -26,6 +26,7 @@ classifiers = [
 dependencies = [
   "airtight",
   "platformdirs",
+  "pleiades_search_api @ https://github.com/isawnyu/pleiades_search_api/archive/refs/heads/external_webi.zip",
   "pytest",
   "validators",
   "webiquette @ https://github.com/isawnyu/webiquette/archive/refs/heads/main.zip"
