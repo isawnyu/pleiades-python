@@ -31,7 +31,8 @@ class TestGazetteerInit:
 
     @classmethod
     def teardown_class(cls):
-        rmtree(Path(CACHE_DIR), ignore_errors=True)
+        # rmtree(Path(CACHE_DIR), ignore_errors=True)
+        pass
 
     def test_init_defaults(self):
         g = Gazetteer(cache_dir=CACHE_DIR)
@@ -82,7 +83,8 @@ class TestGazetteerMethods:
 
     @classmethod
     def teardown_class(cls):
-        rmtree(Path(CACHE_DIR), ignore_errors=True)
+        # rmtree(Path(CACHE_DIR), ignore_errors=True)
+        pass
 
     def test_valid_pid_URI(self):
         pid = "https://pleiades.stoa.org/places/295374"
