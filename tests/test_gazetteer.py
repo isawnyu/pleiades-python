@@ -154,4 +154,4 @@ class TestGazetteerSearch:
         q = Query()
         q.set_parameter("title", "Zucchabar")
         results = self.g.search(q)
-        assert len(results["hits"]) == 1
+        assert len(results) == 1

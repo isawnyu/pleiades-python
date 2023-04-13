@@ -91,7 +91,11 @@ class Gazetteer:
         except AttributeError:
             self.search_interface = SearchInterface(webi=self.webi)
             si = self.search_interface
-        return si.search(query)
+        results = si.search(query)
+        result_uris = [d["uri"] for d in results["hits"]]
+        for uri in result_uris:
+            self.get_place(uri)
+        return results["hits"]
 
     def valid_pid(self, pid: str, bypass_cache: bool = False) -> str:
         """
