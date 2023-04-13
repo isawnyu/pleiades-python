@@ -10,7 +10,6 @@ Define the Place class
 """
 
 import logging
-from validators import url as uri
 from webiquette.webi import Webi
 
 logger = logging.getLogger(__name__)
@@ -23,6 +22,10 @@ class Place:
         if place_uri:
             self.update(place_uri)
 
-    def update(self, place_uri: str):
-        r = self.webi.get(place_uri + "/json")
+    def update(self, place_uri: str, bypass_cache: bool = False) -> str:
+        """fetch JSON from server and parse"""
+        r = self.webi.get(place_uri + "/json", bypass_cache=bypass_cache)
         self.data = r.json()
+        self.title = self.data["title"]
+        self.uri = self.data["uri"]
+        return self.uri

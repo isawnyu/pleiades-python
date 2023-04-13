@@ -34,8 +34,10 @@ class TestPlaceInit:
         pass
 
     def test_init_defaults(self):
-        p = Place(self.g.webi, "https://pleiades.stoa.org/places/295374")
-        assert p.data["title"] == "Zucchabar"
+        place_uri = "https://pleiades.stoa.org/places/295374"
+        p = Place(self.g.webi, place_uri)
+        assert p.title == "Zucchabar"
+        assert p.uri == place_uri
 
     def test_init_empty(self):
         p = Place()
