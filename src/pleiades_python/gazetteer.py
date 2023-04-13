@@ -13,6 +13,7 @@ from datetime import timedelta
 from importlib.metadata import metadata
 import logging
 from platformdirs import user_cache_dir
+from pleiades_python.place import Place
 from urllib.parse import urlparse
 from validators import url as uri
 from webiquette.webi import Webi
@@ -54,6 +55,25 @@ class Gazetteer:
             expire_after=expire_after,
             cache_dir=cache_dir,
         )
+        self.places = dict()
+
+    def get_place(
+        self, pid: str, reload: bool = False, bypass_cache: bool = False
+    ) -> str:
+        place_uri = self.valid_pid(pid)
+        do_load = reload
+        try:
+            p = self.places[place_uri]
+        except KeyError:
+            do_load = True
+        if do_load:
+            p = Place(self.webi, place_uri=place_uri)
+            self.places[place_uri] = p
+            self.reindex(p)
+        return p
+
+    def reindex(self, place: Place):
+        pass
 
     def valid_pid(self, pid: str, bypass_cache: bool = False) -> str:
         """

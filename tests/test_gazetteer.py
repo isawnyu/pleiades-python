@@ -22,16 +22,17 @@ import logging
 logger = logging.getLogger(__name__)
 
 CACHE_DIR = "tests/data/cache/"
+Path(CACHE_DIR).mkdir(parents=True, exist_ok=True)
+gtest = Gazetteer(cache_dir=CACHE_DIR)
 
 
 class TestGazetteerInit:
     @classmethod
     def setup_class(cls):
-        Path(CACHE_DIR).mkdir(parents=True, exist_ok=True)
+        pass
 
     @classmethod
     def teardown_class(cls):
-        # rmtree(Path(CACHE_DIR), ignore_errors=True)
         pass
 
     def test_init_defaults(self):
@@ -75,15 +76,14 @@ class TestGazetteerInit:
         assert isinstance(g.webi, Webi)
 
 
-class TestGazetteerMethods:
+class TestGazetteerValidPID:
     @classmethod
     def setup_class(cls):
-        Path(CACHE_DIR).mkdir(parents=True, exist_ok=True)
-        cls.g = Gazetteer(cache_dir=CACHE_DIR)
+        global gtest
+        cls.g = gtest
 
     @classmethod
     def teardown_class(cls):
-        # rmtree(Path(CACHE_DIR), ignore_errors=True)
         pass
 
     def test_valid_pid_URI(self):
@@ -121,3 +121,19 @@ class TestGazetteerMethods:
         pid = "https://pleiades.stoa.org/places/1001902"
         uri = self.g.valid_pid(pid)
         assert uri == "https://pleiades.stoa.org/places/991367"
+
+
+class TestGazetteerGetPlace:
+    @classmethod
+    def setup_class(cls):
+        global gtest
+        cls.g = gtest
+
+    @classmethod
+    def teardown_class(cls):
+        pass
+
+    def test_get_place(self):
+        pid = "295374"
+        p = self.g.get_place(pid)
+        assert p.title == "Zucchabar"
